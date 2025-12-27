@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="copy">Copy</string>
+    <string name="share">Share</string>
+    <string name="highlight">Highlight</string>
+    <string name="pdf_viewer">PDF Viewer</string>
+    <string name="search_in_pdf">Search in pdf …</string>
+    <string name="load_pdf">load pdf</string>
+    <string name="close">close</string>
+    <string name="close_search">close</string>
+
+    <string name="search_navigation_placeholder">%d of %d</string>
+    <string name="table_of_contents">Table of Contents</string>
+    <string name="expand">expand</string>
+    <string name="show_search_result">Show Search Result</string>
+    <string name="page_placeholder">Page: %d</string>
+</resources>
