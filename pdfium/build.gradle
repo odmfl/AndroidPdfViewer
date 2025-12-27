@@ -50,9 +50,9 @@ project.afterEvaluate {
     publishing {
         publications {
             libraryProject(MavenPublication) {
-                groupId 'com.github.odmfl'
+                groupId 'com.github.qw123wh'
                 artifactId 'pdfium-android'
-                version '1.1.1'
+                version '1.0'
                 artifact bundleReleaseAar
             }
         }
