@@ -1,0 +1,5 @@
+# ninja log v5
+0	2491	7884755301734224	CMakeFiles/pdfium.dir/toc-helper.cpp.o	5da79bcfc2322bbc
+10	2675	7884755303614307	CMakeFiles/pdfium.dir/pdfium.cpp.o	6b5e86769c9d7acf
+2676	2898	7884755305847737	C:/Users/Ciro/StudioProjects/AndroidPdfViewer/pdfium/build/intermediates/cxx/Debug/2yh33551/obj/arm64-v8a/libpdfium.so	7f8e6cb3a5e688fb
+20	2658	7885483758237389	C:/Users/Ciro/StudioProjects/AndroidPdfViewer/pdfium/build/intermediates/cxx/Debug/2yh33551/obj/arm64-v8a/libpdfium.so	7f8e6cb3a5e688fb

@@ -1,0 +1,40 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Ciro\\StudioProjects\\AndroidPdfViewer\\pdfium\\src\\main\\jni\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\Ciro\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\Ciro\\StudioProjects\\AndroidPdfViewer\\pdfium\\.cxx\\Debug\\2yh33551\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\Ciro\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\Ciro\\StudioProjects\\AndroidPdfViewer\\pdfium\\.cxx\\Debug\\2yh33551\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "pdfium::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "pdfium",
+      "output": "C:\\Users\\Ciro\\StudioProjects\\AndroidPdfViewer\\pdfium\\build\\intermediates\\cxx\\Debug\\2yh33551\\obj\\x86\\libpdfium.so",
+      "runtimeFiles": [
+        "C:\\Users\\Ciro\\StudioProjects\\AndroidPdfViewer\\pdfium\\src\\main\\jni\\lib\\x86\\libpdfium.cr.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\Ciro\\AppData\\Local\\Android\\Sdk\\ndk\\28.1.13356709\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\Ciro\\AppData\\Local\\Android\\Sdk\\ndk\\28.1.13356709\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

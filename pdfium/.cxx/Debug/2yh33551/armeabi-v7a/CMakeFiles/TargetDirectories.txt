@@ -1,0 +1,3 @@
+C:/Users/Ciro/StudioProjects/AndroidPdfViewer/pdfium/.cxx/Debug/2yh33551/armeabi-v7a/CMakeFiles/pdfium.dir
+C:/Users/Ciro/StudioProjects/AndroidPdfViewer/pdfium/.cxx/Debug/2yh33551/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Ciro/StudioProjects/AndroidPdfViewer/pdfium/.cxx/Debug/2yh33551/armeabi-v7a/CMakeFiles/rebuild_cache.dir
