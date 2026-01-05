@@ -774,6 +774,8 @@ public class PDFView extends RelativeLayout {
 
         // Use original page size for native coordinate system
         Size originalSize = pdfFile.getOriginalPageSize(page);
+        if (originalSize.isEmpty()) return;
+        
         pdfiumCore.nativeGetCharPos(pagePtr
                 , 0
                 , 0
@@ -800,6 +802,8 @@ public class PDFView extends RelativeLayout {
         
         // Use original page size for native coordinate system
         Size originalSize = pdfFile.getOriginalPageSize(page);
+        if (originalSize.isEmpty()) return;
+        
         pdfiumCore.nativeGetMixedLooseCharPos(pagePtr
                 , 0
                 , getLateralOffset()
@@ -826,6 +830,10 @@ public class PDFView extends RelativeLayout {
         
         // Use original page size for native coordinate system
         Size originalSize = pdfFile.getOriginalPageSize(page);
+        if (originalSize.isEmpty()) {
+            return;
+        }
+        
         pdfiumCore.nativeGetMixedLooseCharPos(pagePtr
                 , 0
                 , getLateralOffset()
