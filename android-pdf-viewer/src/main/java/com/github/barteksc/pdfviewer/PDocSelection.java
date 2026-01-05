@@ -30,6 +30,7 @@ import com.github.barteksc.pdfviewer.model.Highlight;
 import com.github.barteksc.pdfviewer.model.SearchRecord;
 import com.github.barteksc.pdfviewer.model.SearchRecordItem;
 import com.github.barteksc.pdfviewer.util.Util;
+import com.shockwave.pdfium.util.Size;
 import com.shockwave.pdfium.util.SizeF;
 
 import java.util.ArrayList;
