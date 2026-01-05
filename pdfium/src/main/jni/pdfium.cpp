@@ -1277,6 +1277,9 @@ JNI_FUNC(jint, PdfiumCore, nativeFindTextPage)(JNI_ARGS, jlong textPtr, jstring 
 JNI_FUNC(jboolean, PdfiumCore, nativeFindTextPageNext)(JNI_ARGS, jlong searchPtr) {
     return FPDFText_FindNext((FPDF_SCHHANDLE) searchPtr);
 }
+JNI_FUNC(jboolean, PdfiumCore, nativeFindTextPagePrev)(JNI_ARGS, jlong searchPtr) {
+    return FPDFText_FindPrev((FPDF_SCHHANDLE) searchPtr);
+}
 JNI_FUNC(jlong, PdfiumCore, nativeFindTextPageStart)(JNI_ARGS, jlong textPtr, jlong keyStr,
                                                      jint flag, jint startIdx) {
     //const unsigned short * keyStr = env->GetStringChars(key, 0);

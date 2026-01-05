@@ -187,6 +187,8 @@ public class PdfiumCore {
 
     public native boolean nativeFindTextPageNext(long searchPtr);
 
+    public native boolean nativeFindTextPagePrev(long searchPtr);
+
     public native int nativeGetFindIdx(long searchPtr);
 
     public native int nativeGetFindLength(long searchPtr);

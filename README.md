@@ -12,6 +12,29 @@ Library for displaying PDF documents on Android, with `animations`, `gestures`, 
 It is based on [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) for decoding PDF files. Works on API 11 (Android 3.0) and higher.
 Licensed under Apache License 2.0.
 
+## ✨ New: Comprehensive Text Search API
+
+This fork adds a powerful, easy-to-use text search API with:
+- 🔍 **Document-wide search** - Search across all pages or specific ranges
+- ⚡ **Page-level search** - Fast search within individual pages  
+- 🔄 **Bidirectional navigation** - Navigate forward and backward through results
+- 🎯 **Search options** - Case-sensitive, whole word matching, and more
+- 📦 **Clean API** - AutoCloseable resources, thread-safe operations
+- 📚 **Comprehensive docs** - See [API.md](API.md) for complete documentation
+
+```java
+// Quick example: Search entire document
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+try {
+    List<SearchResult> results = docSearch.searchAll("Android");
+    // Process results...
+} finally {
+    docSearch.close();
+}
+```
+
+See the [Text Search](#text-search) section below for more details.
+
 ## What's new in 3.2.0-beta.1?
 * Merge PR #714 with optimized page load
 * Merge PR #776 with fix for max & min zoom level
@@ -111,6 +134,77 @@ pdfView.fromAsset(String)
 ```
 
 * `pages` is optional, it allows you to filter and order the pages of the PDF as you need
+
+## Text Search
+
+The library provides powerful text search capabilities through a clean API. You can search for text within PDF documents, get match positions, and highlight search results.
+
+### Quick Example
+
+```java
+// Create PdfiumCore instance
+PdfiumCore pdfiumCore = new PdfiumCore(context);
+PdfDocument document = pdfiumCore.newDocument(parcelFileDescriptor);
+
+// Search across entire document
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+try {
+    List<SearchResult> results = docSearch.searchAll("Android");
+    Log.d(TAG, "Found " + results.size() + " matches");
+    
+    for (SearchResult result : results) {
+        Log.d(TAG, "Match on page " + result.getPageIndex() + 
+                   " at position " + result.getCharIndex());
+    }
+} finally {
+    docSearch.close();
+}
+```
+
+### Search Options
+
+The text search API supports various search options:
+
+```java
+// Case-sensitive search
+results = search.searchAll("Android", TextSearch.FLAG_MATCH_CASE);
+
+// Whole word search
+results = search.searchAll("PDF", TextSearch.FLAG_MATCH_WHOLE_WORD);
+
+// Combined flags
+results = search.searchAll("Android", 
+    TextSearch.FLAG_MATCH_CASE | TextSearch.FLAG_MATCH_WHOLE_WORD);
+```
+
+### Search on Specific Pages
+
+```java
+// Search on a single page
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+List<SearchResult> pageResults = docSearch.searchPage(0, "Android");
+
+// Search within a page range
+List<SearchResult> rangeResults = docSearch.searchRange(0, 5, "Android");
+```
+
+### Integration with PDFView
+
+The sample app demonstrates how to integrate text search with the PDFView component for visual highlighting and navigation:
+
+```java
+// Perform search
+pdfView.search("search term");
+
+// Navigate through results
+pdfView.navigateToNextSearchItem();
+pdfView.navigateToPreviousSearchItem();
+
+// Clear search
+pdfView.clearSearch();
+```
+
+For complete API documentation and more examples, see [API.md](API.md).
 
 ## Scroll handle
 
