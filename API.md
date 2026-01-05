@@ -467,21 +467,251 @@ List<SearchResult> results = docSearch.searchAll("term");
 
 ## Integration with PDFView
 
-The text search API can be integrated with the `PDFView` component for visual search results:
+The Android PDF Viewer library provides built-in integration between the text search API and the `PDFView` component, automatically handling visual highlighting of search results.
+
+### Built-in Search with Visual Highlighting
+
+The `PDFView` class includes integrated search functionality that automatically highlights results:
 
 ```java
-// Perform search
-List<SearchResult> results = documentSearch.searchAll("Android");
+// Initialize PDFView
+PDFView pdfView = findViewById(R.id.pdfView);
 
-// Highlight results in PDFView
-for (SearchResult result : results) {
-    // Convert search result to PDFView highlight
-    pdfView.addHighlight(
-        result.getPageIndex(),
-        result.getCharIndex(),
-        result.getCharCount()
-    );
+// Configure PDF with search listener
+pdfView.fromAsset("sample.pdf")
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Called when matches are found on a page
+        Log.d(TAG, "Found " + totalMatched + " matches on page " + page);
+    })
+    .load();
+
+// Perform search - automatically highlights results
+pdfView.search("Android");
+
+// Navigate through results
+pdfView.navigateToNextSearchItem();
+pdfView.navigateToPreviousSearchItem();
+
+// Clear search and remove highlights
+pdfView.clearSearch();
+```
+
+### Search Result Highlighting
+
+Search results are automatically highlighted with two different colors:
+- **Focused result**: Highlighted in a distinct color (current search position)
+- **Other results**: Highlighted in a semi-transparent color
+
+The highlighting is performed by the `PDocSelection` view layer, which:
+1. Retrieves search results from `SearchRecord` objects
+2. Converts page coordinates to screen coordinates
+3. Draws highlight rectangles with appropriate paints
+4. Updates highlights when zooming or scrolling
+
+### Customizing Search Highlight Colors
+
+While the default search highlighting is built-in, you can customize the highlight appearance through the `PDocSelection` component:
+
+```java
+// Access the selection view
+PDocSelection selectionView = findViewById(R.id.docSelection);
+
+// The search highlight paints can be customized in your layout XML or programmatically
+// See PDocSelection class for available customization options
+```
+
+### Search Navigation
+
+The library provides convenient methods for navigating search results:
+
+```java
+// Navigate to next result
+boolean hasNext = pdfView.navigateToNextSearchItem();
+
+// Navigate to previous result
+boolean hasPrev = pdfView.navigateToPreviousSearchItem();
+
+// Navigate to specific search result by index
+boolean success = pdfView.navigateToSearchItem(pageIndex, searchItemIndex);
+
+// Get current search position
+int currentIndex = pdfView.getCurrentFocusedSearchItemIndex();
+```
+
+### Complete Search Example with UI
+
+```java
+public class MainActivity extends AppCompatActivity {
+    private PDFView pdfView;
+    private SearchView searchView;
+    private TextView resultCounter;
+    private int currentSearchIndex = 0;
+    private int totalSearchResults = 0;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        pdfView = findViewById(R.id.pdfView);
+        searchView = findViewById(R.id.searchView);
+        resultCounter = findViewById(R.id.resultCounter);
+        
+        // Setup PDF with search listener
+        pdfView.fromAsset("sample.pdf")
+            .onSearchMatch((page, totalMatched, word) -> {
+                totalSearchResults += totalMatched;
+                updateResultCounter();
+            })
+            .load();
+        
+        // Setup search input
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                performSearch(query);
+                return true;
+            }
+            
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Optional: implement debounced real-time search
+                return false;
+            }
+        });
+        
+        // Setup navigation buttons
+        findViewById(R.id.prevButton).setOnClickListener(v -> {
+            if (pdfView.navigateToPreviousSearchItem()) {
+                currentSearchIndex--;
+                updateResultCounter();
+            }
+        });
+        
+        findViewById(R.id.nextButton).setOnClickListener(v -> {
+            if (pdfView.navigateToNextSearchItem()) {
+                currentSearchIndex++;
+                updateResultCounter();
+            }
+        });
+    }
+    
+    private void performSearch(String query) {
+        // Reset counters
+        currentSearchIndex = 0;
+        totalSearchResults = 0;
+        
+        // Perform search (automatically highlights results)
+        pdfView.search(query);
+        
+        // Update UI
+        updateResultCounter();
+    }
+    
+    private void updateResultCounter() {
+        if (totalSearchResults == 0) {
+            resultCounter.setText("No results");
+        } else {
+            resultCounter.setText(String.format("%d of %d", 
+                currentSearchIndex + 1, totalSearchResults));
+        }
+    }
 }
 ```
 
-See the sample application for a complete working example.
+### Layout XML for Search UI
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <!-- Search bar -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    
+    <!-- PDF View -->
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintBottom_toTopOf="@id/searchNavigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    
+    <!-- Selection overlay for highlighting -->
+    <com.github.barteksc.pdfviewer.PDocSelection
+        android:id="@+id/docSelection"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@id/pdfView"
+        app:layout_constraintBottom_toBottomOf="@id/pdfView"
+        app:layout_constraintStart_toStartOf="@id/pdfView"
+        app:layout_constraintEnd_toEndOf="@id/pdfView" />
+    
+    <!-- Search navigation -->
+    <LinearLayout
+        android:id="@+id/searchNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+        
+        <Button
+            android:id="@+id/prevButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous" />
+        
+        <TextView
+            android:id="@+id/resultCounter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="0 of 0" />
+        
+        <Button
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+### Advanced: Using Low-Level Search API with PDFView
+
+For more control, you can use the low-level search API alongside PDFView:
+
+```java
+// Get PdfiumCore and document from PDFView
+PdfiumCore pdfiumCore = pdfView.getPdfiumCore();
+PdfDocument document = pdfView.getPdfDocument();
+
+// Use low-level search API
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+try {
+    List<SearchResult> results = docSearch.searchAll("Android");
+    
+    // Process results and update PDFView manually if needed
+    for (SearchResult result : results) {
+        Log.d(TAG, "Found on page " + result.getPageIndex() 
+            + " at position " + result.getCharIndex());
+    }
+} finally {
+    docSearch.close();
+}
+```
+
+See the sample application (`MainActivity.java` and `SearchExampleActivity.java`) for complete working examples with full UI integration.
