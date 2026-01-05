@@ -20,7 +20,6 @@ import android.graphics.RectF;
 import androidx.annotation.NonNull;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.PdfFile;
 import com.shockwave.pdfium.util.SizeF;
 
 /**
@@ -49,8 +48,9 @@ public class CoordinateTransformer {
      * @param outViewRect Output rectangle in view coordinates
      */
     public void pageToViewRect(int pageIndex, @NonNull RectF pageRect, @NonNull RectF outViewRect) {
-        PdfFile pdfFile = pdfView.pdfFile;
-        if (pdfFile == null) {
+        // Check if PDF is loaded
+        SizeF pageSize = pdfView.getPageSize(pageIndex);
+        if (pageSize == null || (pageSize.getWidth() == 0 && pageSize.getHeight() == 0)) {
             outViewRect.set(pageRect);
             return;
         }
