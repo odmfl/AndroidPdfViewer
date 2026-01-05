@@ -188,23 +188,94 @@ List<SearchResult> pageResults = docSearch.searchPage(0, "Android");
 List<SearchResult> rangeResults = docSearch.searchRange(0, 5, "Android");
 ```
 
-### Integration with PDFView
+### Integration with PDFView and Visual Highlighting
 
-The sample app demonstrates how to integrate text search with the PDFView component for visual highlighting and navigation:
+The PDFView component includes built-in search integration with **automatic visual highlighting** of search results:
 
 ```java
-// Perform search
+// Setup PDFView with search callback
+pdfView.fromAsset("sample.pdf")
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Called when matches are found on a page
+        Log.d(TAG, "Found " + totalMatched + " matches on page " + page);
+    })
+    .load();
+
+// Perform search - automatically highlights all results
 pdfView.search("search term");
 
-// Navigate through results
-pdfView.navigateToNextSearchItem();
-pdfView.navigateToPreviousSearchItem();
+// Navigate through results (current result highlighted differently)
+pdfView.navigateToNextSearchItem();     // Returns true if navigated
+pdfView.navigateToPreviousSearchItem(); // Returns true if navigated
 
-// Clear search
+// Clear search and remove highlights
 pdfView.clearSearch();
 ```
 
-For complete API documentation and more examples, see [API.md](API.md).
+**Visual Features:**
+- ✨ Search results are automatically highlighted on the PDF page
+- 🎯 Current/focused result is highlighted in a distinct color
+- 📍 Other results are highlighted in a semi-transparent color
+- 🔄 Highlights update automatically when zooming or scrolling
+- 📱 Highlights are drawn by the `PDocSelection` overlay layer
+
+**Complete Example with UI:**
+
+```java
+public class MainActivity extends AppCompatActivity {
+    private PDFView pdfView;
+    private int currentResultIndex = 0;
+    private int totalResults = 0;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        pdfView = findViewById(R.id.pdfView);
+        
+        // Configure PDF with search
+        pdfView.fromAsset("sample.pdf")
+            .onSearchMatch((page, totalMatched, word) -> {
+                totalResults += totalMatched;
+                updateResultCounter();
+            })
+            .load();
+        
+        // Next button
+        findViewById(R.id.nextBtn).setOnClickListener(v -> {
+            if (pdfView.navigateToNextSearchItem()) {
+                currentResultIndex++;
+                updateResultCounter();
+            }
+        });
+        
+        // Previous button
+        findViewById(R.id.prevBtn).setOnClickListener(v -> {
+            if (pdfView.navigateToPreviousSearchItem()) {
+                currentResultIndex--;
+                updateResultCounter();
+            }
+        });
+    }
+    
+    private void performSearch(String query) {
+        currentResultIndex = 0;
+        totalResults = 0;
+        pdfView.search(query);  // Automatically highlights results
+    }
+    
+    private void updateResultCounter() {
+        TextView counter = findViewById(R.id.resultCounter);
+        counter.setText(String.format("%d of %d", 
+            currentResultIndex + 1, totalResults));
+    }
+}
+```
+
+For complete API documentation, advanced usage, and more examples, see [API.md](API.md).
+
+**See the sample app** (`MainActivity.java`) for a fully working implementation with search UI, navigation controls, and result highlighting.
 
 ## Scroll handle
 
