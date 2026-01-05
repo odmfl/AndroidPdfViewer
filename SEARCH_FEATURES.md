@@ -226,6 +226,18 @@ int flags = TextSearch.FLAG_MATCH_WHOLE_WORD;
 int flags = TextSearch.FLAG_MATCH_CASE | TextSearch.FLAG_MATCH_WHOLE_WORD;
 ```
 
+### Highlight Vertical Expansion
+
+Control how much the search highlight rectangles expand vertically:
+
+```java
+pdfView.fromAsset("sample.pdf")
+    .setVerticalExpandPercent(0.25f)  // Expand by 25% (default)
+    .load();
+```
+
+This makes highlights slightly taller for better visibility.
+
 ### Listeners
 
 ```java
