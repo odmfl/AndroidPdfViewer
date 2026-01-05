@@ -19,6 +19,10 @@ public class Size {
         return height;
     }
 
+    public boolean isEmpty() {
+        return width == 0 && height == 0;
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
