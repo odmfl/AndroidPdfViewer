@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 .pageFling(true)
                 .enableDoubletap(true)
                 .enableMergedSelectionLines(true)
+                .pageFitPolicy(FitPolicy.BOTH)
                 .setLineThreshold(15)
                 .setSepia(.5f)
                 .onLoad(nbPages -> {
