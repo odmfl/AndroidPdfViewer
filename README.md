@@ -12,6 +12,29 @@ Library for displaying PDF documents on Android, with `animations`, `gestures`, 
 It is based on [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) for decoding PDF files. Works on API 11 (Android 3.0) and higher.
 Licensed under Apache License 2.0.
 
+## ✨ New: Comprehensive Text Search API
+
+This fork adds a powerful, easy-to-use text search API with:
+- 🔍 **Document-wide search** - Search across all pages or specific ranges
+- ⚡ **Page-level search** - Fast search within individual pages  
+- 🔄 **Bidirectional navigation** - Navigate forward and backward through results
+- 🎯 **Search options** - Case-sensitive, whole word matching, and more
+- 📦 **Clean API** - AutoCloseable resources, thread-safe operations
+- 📚 **Comprehensive docs** - See [API.md](API.md) for complete documentation
+
+```java
+// Quick example: Search entire document
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+try {
+    List<SearchResult> results = docSearch.searchAll("Android");
+    // Process results...
+} finally {
+    docSearch.close();
+}
+```
+
+See the [Text Search](#text-search) section below for more details.
+
 ## What's new in 3.2.0-beta.1?
 * Merge PR #714 with optimized page load
 * Merge PR #776 with fix for max & min zoom level
