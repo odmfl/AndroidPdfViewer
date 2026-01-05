@@ -39,6 +39,7 @@ public class TextSearch implements AutoCloseable {
     public List<SearchResult> searchAll(String searchTerm, int flags);
     public void startSearch(String searchTerm, int flags);
     public boolean findNext();
+    public boolean findPrev();
     public SearchResult getCurrentResult();
     public void endSearch();
 }
@@ -199,6 +200,38 @@ try {
     }
     
     // End search when done
+    search.endSearch();
+} finally {
+    search.close();
+}
+```
+
+### Bidirectional Search (Forward and Backward)
+
+```java
+TextSearch search = new TextSearch(pdfiumCore, document, pageIndex);
+try {
+    // Start search session
+    search.startSearch("Android", 0);
+    
+    // Find first result
+    if (search.findNext()) {
+        SearchResult result = search.getCurrentResult();
+        Log.d(TAG, "First result at: " + result.getCharIndex());
+    }
+    
+    // Navigate forward
+    if (search.findNext()) {
+        SearchResult result = search.getCurrentResult();
+        Log.d(TAG, "Next result at: " + result.getCharIndex());
+    }
+    
+    // Navigate backward
+    if (search.findPrev()) {
+        SearchResult result = search.getCurrentResult();
+        Log.d(TAG, "Previous result at: " + result.getCharIndex());
+    }
+    
     search.endSearch();
 } finally {
     search.close();

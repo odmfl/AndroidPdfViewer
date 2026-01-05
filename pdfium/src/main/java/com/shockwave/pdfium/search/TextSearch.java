@@ -146,6 +146,18 @@ public class TextSearch implements AutoCloseable {
     }
 
     /**
+     * Finds the previous occurrence of the search term.
+     *
+     * @return true if a previous result was found, false otherwise
+     */
+    public boolean findPrev() {
+        if (searchHandlePtr == 0) {
+            return false;
+        }
+        return pdfiumCore.nativeFindTextPagePrev(searchHandlePtr);
+    }
+
+    /**
      * Gets the current search result.
      *
      * @return The current SearchResult, or null if no search is active or no result found
