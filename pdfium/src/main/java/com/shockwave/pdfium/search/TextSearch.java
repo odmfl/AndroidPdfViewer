@@ -51,6 +51,7 @@ public class TextSearch implements AutoCloseable {
     private final PdfiumCore pdfiumCore;
     private final PdfDocument document;
     private final int pageIndex;
+    private long pagePtr = 0;
     private long textPagePtr = 0;
     private long searchHandlePtr = 0;
     private String currentSearchTerm = null;
@@ -197,12 +198,21 @@ public class TextSearch implements AutoCloseable {
 
     /**
      * Gets bounding rectangles for a character range.
+     * 
+     * Note: This method currently returns an empty list. Full implementation requires
+     * integration with PdfiumCore's getTextRects method or similar coordinate conversion
+     * from page coordinates to device coordinates with proper offset handling.
+     * 
+     * TODO: Implement proper rectangle retrieval using:
+     * - FPDFText_GetRect to get page coordinates
+     * - FPDF_PageToDevice for coordinate conversion
+     * - Proper offset and size calculations
      *
      * @param charIndex  Starting character index
      * @param charCount  Number of characters
      * @param pageWidth  Page width in pixels
      * @param pageHeight Page height in pixels
-     * @return List of bounding rectangles
+     * @return List of bounding rectangles (currently empty - to be implemented)
      */
     @NonNull
     public List<RectF> getBoundingRects(int charIndex, int charCount, int pageWidth, int pageHeight) {
@@ -212,9 +222,12 @@ public class TextSearch implements AutoCloseable {
             return rects;
         }
 
-        // Note: This is a simplified implementation
-        // A full implementation would iterate through rectangles and convert them
-        // using native methods similar to getTextRects in PdfiumCore
+        // TODO: Full implementation needed
+        // Would require calling native methods to:
+        // 1. Get rect count: pdfiumCore.nativeCountRects(textPagePtr, charIndex, charCount)
+        // 2. For each rect, get coordinates and convert to device coordinates
+        // 3. Apply proper offsets and transformations
+        // See PdfiumCore.getTextRects for reference implementation
         
         return rects;
     }
@@ -232,6 +245,8 @@ public class TextSearch implements AutoCloseable {
 
     /**
      * Closes the text search and releases all resources including the text page.
+     * Note: The page itself is managed by the PdfDocument and will be closed when
+     * closeDocument() is called.
      */
     @Override
     public void close() {
@@ -240,12 +255,13 @@ public class TextSearch implements AutoCloseable {
             pdfiumCore.closeTextPage(textPagePtr);
             textPagePtr = 0;
         }
+        pagePtr = 0; // Page lifecycle is managed by PdfDocument
     }
 
     private void ensureTextPageLoaded() {
         if (textPagePtr == 0) {
-            // Load the page first
-            long pagePtr = pdfiumCore.openPage(document, pageIndex);
+            // Load the page first (will be registered in document)
+            pagePtr = pdfiumCore.openPage(document, pageIndex);
             if (pagePtr != 0) {
                 textPagePtr = pdfiumCore.nativeLoadTextPage(pagePtr);
             }

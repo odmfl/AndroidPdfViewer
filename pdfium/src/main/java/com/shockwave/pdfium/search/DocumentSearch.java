@@ -1,5 +1,7 @@
 package com.shockwave.pdfium.search;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.shockwave.pdfium.PdfDocument;
@@ -29,6 +31,8 @@ import java.util.List;
  * </pre>
  */
 public class DocumentSearch implements AutoCloseable {
+
+    private static final String TAG = "DocumentSearch";
 
     private final PdfiumCore pdfiumCore;
     private final PdfDocument document;
@@ -181,7 +185,8 @@ public class DocumentSearch implements AutoCloseable {
             try {
                 search.close();
             } catch (Exception e) {
-                // Log but continue closing others
+                // Log error but continue closing others to ensure all resources are released
+                Log.e(TAG, "Error closing TextSearch instance", e);
             }
         }
         activeSearches.clear();
