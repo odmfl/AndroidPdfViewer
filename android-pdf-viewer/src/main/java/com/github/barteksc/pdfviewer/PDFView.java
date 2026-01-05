@@ -772,13 +772,21 @@ public class PDFView extends RelativeLayout {
         Long pagePtr = pdfFile.pdfDocument.mNativePagesPtr.get(page);
         if (pagePtr == null) return;
 
-        SizeF size = pdfFile.getPageSize(page);
-        //  SizeF size = pdfFile.SizeF size = pdfView.pdfFile.getPageSize(page);(page, getZoom());
+        // Use original page size for native coordinate system
+        Size originalSize = pdfFile.getOriginalPageSize(page);
         pdfiumCore.nativeGetCharPos(pagePtr
                 , 0
                 , 0
-                , (int) size.getWidth(), (int) size.getHeight(), pos, dragPinchManager.loadText(), index, true);
+                , originalSize.getWidth(), originalSize.getHeight(), pos, dragPinchManager.loadText(), index, true);
 
+        // Scale rectangle from original page coordinates to scaled page coordinates
+        SizeF scaledSize = pdfFile.getPageSize(page);
+        float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+        float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+        pos.left *= scaleX;
+        pos.top *= scaleY;
+        pos.right *= scaleX;
+        pos.bottom *= scaleY;
     }
 
     public void getCharLoosePos(RectF pos, int index) {
@@ -789,13 +797,22 @@ public class PDFView extends RelativeLayout {
 
         Long pagePtr = pdfFile.pdfDocument.mNativePagesPtr.get(page);
         if (pagePtr == null) return;
-        SizeF size = pdfFile.getPageSize(page);
-        //   SizeF size = pdfFile.getScaledPageSize(page, getZoom());
+        
+        // Use original page size for native coordinate system
+        Size originalSize = pdfFile.getOriginalPageSize(page);
         pdfiumCore.nativeGetMixedLooseCharPos(pagePtr
                 , 0
                 , getLateralOffset()
-                , (int) size.getWidth(), (int) size.getHeight(), pos, dragPinchManager.loadText(), index, true);
+                , originalSize.getWidth(), originalSize.getHeight(), pos, dragPinchManager.loadText(), index, true);
 
+        // Scale rectangle from original page coordinates to scaled page coordinates
+        SizeF scaledSize = pdfFile.getPageSize(page);
+        float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+        float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+        pos.left *= scaleX;
+        pos.top *= scaleY;
+        pos.right *= scaleX;
+        pos.bottom *= scaleY;
     }
 
     public void getCharLoose(RectF pos, int index) {
@@ -806,13 +823,22 @@ public class PDFView extends RelativeLayout {
         if (pagePtr == null) {
             return;
         }
-        SizeF size = pdfFile.getPageSize(page);
-        //   SizeF size = pdfFile.getScaledPageSize(page, getZoom());
+        
+        // Use original page size for native coordinate system
+        Size originalSize = pdfFile.getOriginalPageSize(page);
         pdfiumCore.nativeGetMixedLooseCharPos(pagePtr
                 , 0
                 , getLateralOffset()
-                , (int) size.getWidth(), (int) size.getHeight(), pos, dragPinchManager.loadText(), index, true);
+                , originalSize.getWidth(), originalSize.getHeight(), pos, dragPinchManager.loadText(), index, true);
 
+        // Scale rectangle from original page coordinates to scaled page coordinates
+        SizeF scaledSize = pdfFile.getPageSize(page);
+        float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+        float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+        pos.left *= scaleX;
+        pos.top *= scaleY;
+        pos.right *= scaleX;
+        pos.bottom *= scaleY;
     }
 
 
