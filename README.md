@@ -112,6 +112,77 @@ pdfView.fromAsset(String)
 
 * `pages` is optional, it allows you to filter and order the pages of the PDF as you need
 
+## Text Search
+
+The library provides powerful text search capabilities through a clean API. You can search for text within PDF documents, get match positions, and highlight search results.
+
+### Quick Example
+
+```java
+// Create PdfiumCore instance
+PdfiumCore pdfiumCore = new PdfiumCore(context);
+PdfDocument document = pdfiumCore.newDocument(parcelFileDescriptor);
+
+// Search across entire document
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+try {
+    List<SearchResult> results = docSearch.searchAll("Android");
+    Log.d(TAG, "Found " + results.size() + " matches");
+    
+    for (SearchResult result : results) {
+        Log.d(TAG, "Match on page " + result.getPageIndex() + 
+                   " at position " + result.getCharIndex());
+    }
+} finally {
+    docSearch.close();
+}
+```
+
+### Search Options
+
+The text search API supports various search options:
+
+```java
+// Case-sensitive search
+results = search.searchAll("Android", TextSearch.FLAG_MATCH_CASE);
+
+// Whole word search
+results = search.searchAll("PDF", TextSearch.FLAG_MATCH_WHOLE_WORD);
+
+// Combined flags
+results = search.searchAll("Android", 
+    TextSearch.FLAG_MATCH_CASE | TextSearch.FLAG_MATCH_WHOLE_WORD);
+```
+
+### Search on Specific Pages
+
+```java
+// Search on a single page
+DocumentSearch docSearch = new DocumentSearch(pdfiumCore, document);
+List<SearchResult> pageResults = docSearch.searchPage(0, "Android");
+
+// Search within a page range
+List<SearchResult> rangeResults = docSearch.searchRange(0, 5, "Android");
+```
+
+### Integration with PDFView
+
+The sample app demonstrates how to integrate text search with the PDFView component for visual highlighting and navigation:
+
+```java
+// Perform search
+pdfView.search("search term");
+
+// Navigate through results
+pdfView.navigateToNextSearchItem();
+pdfView.navigateToPreviousSearchItem();
+
+// Clear search
+pdfView.clearSearch();
+```
+
+For complete API documentation and more examples, see [API.md](API.md).
+
 ## Scroll handle
 
 Scroll handle is replacement for **ScrollBar** from 1.x branch.
