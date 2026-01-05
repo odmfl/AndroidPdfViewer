@@ -265,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
                 .enableMergedSelectionLines(true)
                 .pageFitPolicy(FitPolicy.BOTH)
                 .setLineThreshold(15)
-                .setSepia(.5f)
                 .onLoad(nbPages -> {
                     this.binding.pdfView
                             .appendHighlight(1, Util.packIntegers(0, 8));
