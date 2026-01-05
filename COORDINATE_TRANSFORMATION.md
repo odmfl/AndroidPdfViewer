@@ -274,6 +274,73 @@ pdfView.search("test");
 pdfView.zoomWithAnimation(2.0f);
 ```
 
+## Coordinate Scaling Implementation
+
+### CoordinateScaler Utility
+
+The `CoordinateScaler` class provides a clean API for transforming coordinates from original PDF space to FitPolicy-scaled space:
+
+```java
+CoordinateScaler scaler = new CoordinateScaler(pdfView);
+
+// Scale a rectangle in place
+RectF rect = new RectF(...);  // Rectangle in original PDF coordinates
+scaler.scaleRect(pageIndex, rect);  // Now in scaled coordinates
+
+// Or create a scaled copy
+RectF originalRect = new RectF(...);
+RectF scaledRect = scaler.scaleRectCopy(pageIndex, originalRect);
+
+// Check if scaling is needed
+if (scaler.needsScaling(pageIndex)) {
+    // Handle differently scaled pages
+}
+
+// Get scale factors
+float[] scales = scaler.getScaleFactors(pageIndex);
+float scaleX = scales[0];
+float scaleY = scales[1];
+```
+
+### Verified Coordinate Paths
+
+All code paths that retrieve text rectangles from PDFium have been verified to properly scale coordinates:
+
+1. **Search Highlighting** (`PDFView.getRectForRecordItem()`)
+   - Uses `pdfFile.getOriginalPageSize()` for native call
+   - Scales results to FitPolicy coordinates
+   - Stores scaled rectangles in `SearchRecordItem.rectFS`
+
+2. **Persistent Highlights** (`PDocSelection.loadHighlightsForPage()`)
+   - Uses `pdfFile.getOriginalPageSize()` for native call
+   - Scales results to FitPolicy coordinates
+   - Stores scaled rectangles for rendering
+
+3. **Text Selection** (`DragPinchManager.getSelRects()`)
+   - Uses `pdfFile.getOriginalPageSize()` for native call
+   - Scales results to FitPolicy coordinates
+   - Returns scaled rectangles for selection handles
+
+All three paths follow the same pattern:
+```java
+// 1. Get original size for native call
+Size originalSize = pdfFile.getOriginalPageSize(pageIndex);
+
+// 2. Call PDFium with original dimensions
+pdfiumCore.getTextRects(..., originalSize, ...);
+
+// 3. Scale results to FitPolicy coordinates
+SizeF scaledSize = pdfFile.getPageSize(pageIndex);
+float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+for (RectF rect : rects) {
+    rect.left *= scaleX;
+    rect.top *= scaleY;
+    rect.right *= scaleX;
+    rect.bottom *= scaleY;
+}
+```
+
 ## References
 
 ### Key Classes
@@ -282,14 +349,17 @@ pdfView.zoomWithAnimation(2.0f);
 - `PageSizeCalculator.java` - FitPolicy calculations
 - `PDocSelection.java` - Highlight rendering
 - `DragPinchManager.java` - Text selection
-- `CoordinateTransformer.java` - Utility for coordinate transformation
+- `CoordinateTransformer.java` - Utility for coordinate transformation (scaled → view)
+- `CoordinateScaler.java` - Utility for coordinate scaling (original → scaled)
 
 ### Key Methods
 - `PDFView.sourceToViewRectFFSearch()` - Transform search rectangles to view coordinates
+- `PDFView.getRectForRecordItem()` - Get and scale search result rectangles
 - `PdfFile.getOriginalPageSize()` - Get unscaled page dimensions
 - `PdfFile.getPageSize()` - Get FitPolicy-scaled page dimensions
 - `PdfFile.getPageOffset()` - Get page position in scroll direction
 - `PdfFile.getSecondaryPageOffset()` - Get page centering offset
+- `CoordinateScaler.scaleRect()` - Scale rectangle from original to scaled coordinates
 
 ### Native Methods
 - `PdfiumCore.getTextRects()` - Get text selection rectangles
