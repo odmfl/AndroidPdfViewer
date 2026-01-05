@@ -432,15 +432,16 @@ public class PDocSelection extends View {
             }
             int startIndex = Util.unpackHigh(entry.getKey());
             int endIndex = Util.unpackLow(entry.getKey());
-            SizeF pageSize = pdfView.pdfFile.getPageSize(pageIndex);
-            if (pageSize.isEmpty() || startIndex < 0 || (endIndex - startIndex) <= 0) {
+            // Use original page size for native coordinate system
+            Size originalPageSize = pdfView.pdfFile.getOriginalPageSize(pageIndex);
+            if (originalPageSize.isEmpty() || startIndex < 0 || (endIndex - startIndex) <= 0) {
                 return;
             }
             this.pdfView.pdfiumCore.getTextRects(
                     pagePtr,
                     0,
                     0,
-                    pageSize.toSize(),
+                    originalPageSize,
                     entry.getValue(),
                     textPtr,
                     startIndex,
@@ -449,6 +450,17 @@ public class PDocSelection extends View {
                     this.pdfView.lineThreshHoldPt,
                     this.pdfView.verticalExpandPercent
             );
+            
+            // Scale rectangles from original page coordinates to scaled page coordinates
+            SizeF scaledPageSize = pdfView.pdfFile.getPageSize(pageIndex);
+            float scaleX = scaledPageSize.getWidth() / originalPageSize.getWidth();
+            float scaleY = scaledPageSize.getHeight() / originalPageSize.getHeight();
+            for (RectF rect : entry.getValue()) {
+                rect.left *= scaleX;
+                rect.top *= scaleY;
+                rect.right *= scaleX;
+                rect.bottom *= scaleY;
+            }
 
         }
         drawHighlights(canvas, r, pageIndex);

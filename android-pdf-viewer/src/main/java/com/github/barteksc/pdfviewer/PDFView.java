@@ -843,7 +843,8 @@ public class PDFView extends RelativeLayout {
         Long tid = pdfFile.pdfDocument.mNativeTextPtr.get(page);
         Long pid = pdfFile.pdfDocument.mNativePagesPtr.get(page);
         if (tid == null || pid == null) return;
-        SizeF size = pdfFile.getPageSize(page);
+        // Use original page size for native coordinate system
+        Size originalSize = pdfFile.getOriginalPageSize(page);
         if (st >= 0 && ed > 0) {
             int rectCount = pdfiumCore.nativeCountRects(tid, st, ed);
             long firstOffset = 0L;
@@ -852,13 +853,23 @@ public class PDFView extends RelativeLayout {
                 for (int i = 0; i < rectCount; i++) {
                     RectF rI = new RectF();
                     long offset = pdfiumCore.nativeGetRect(pid, 0, 0,
-                            (int) size.getWidth(), (int) size.getHeight(),
+                            originalSize.getWidth(), originalSize.getHeight(),
                             tid, rI, i,
                             searchVerticalExpandPercent);
                     rectFS[i] = rI;
                     if (i == 0) {
                         firstOffset = offset;
                     }
+                }
+                // Scale rectangles from original page coordinates to scaled page coordinates
+                SizeF scaledSize = pdfFile.getPageSize(page);
+                float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+                float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+                for (RectF rect : rectFS) {
+                    rect.left *= scaleX;
+                    rect.top *= scaleY;
+                    rect.right *= scaleX;
+                    rect.bottom *= scaleY;
                 }
                 int xBits = (int) (firstOffset >> 32);
                 int yBits = (int) firstOffset;
