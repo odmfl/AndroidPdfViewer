@@ -218,9 +218,10 @@ private void highlightSearch(@NonNull Canvas canvas, List<SearchRecordItem> reco
 Due to sandboxed environment without external network access:
 
 ### ❌ Cannot Build Project
-**Reason**: Cannot download Android Gradle Plugin dependencies
+**Reason**: Cannot download Android Gradle Plugin dependencies from external repositories in sandboxed environment
+
 ```
-Plugin [id: 'com.android.application', version: '8.1.1'] was not found
+Plugin [id: 'com.android.application'] was not found in repositories
 ```
 
 **Impact**: Cannot run the following verifications:
