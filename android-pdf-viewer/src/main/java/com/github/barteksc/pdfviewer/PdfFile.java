@@ -195,7 +195,7 @@ class PdfFile {
         return pageSizes.get(pageIndex);
     }
 
-    Size getOriginalPageSize(int pageIndex) {
+    public Size getOriginalPageSize(int pageIndex) {
         int docPage = documentPage(pageIndex);
         if (docPage < 0) {
             return new Size(0, 0);

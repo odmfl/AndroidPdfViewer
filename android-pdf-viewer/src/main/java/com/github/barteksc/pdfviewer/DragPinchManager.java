@@ -266,14 +266,14 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
                 if (pagePtr == null) {
                     return;
                 }
-                pdfView.pdfiumCore.getPageSize(pdfView.pdfFile.pdfDocument, page);
-                SizeF size = pdfView.pdfFile.getPageSize(page);
+                // Use original page size for native coordinate system
+                Size originalSize = pdfView.pdfFile.getOriginalPageSize(page);
                 int rectCount = pdfView.pdfiumCore
                         .getTextRects(
                                 pagePtr,
                                 0,
                                 0,
-                                new Size((int) size.getWidth(), (int) size.getHeight()),
+                                originalSize,
                                 rectPagePool,
                                 tid,
                                 selSt,
@@ -282,6 +282,19 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
                                 pdfView.lineThreshHoldPt,
                                 pdfView.verticalExpandPercent
                         );
+                
+                // Scale rectangles from original page coordinates to scaled page coordinates
+                SizeF scaledSize = pdfView.pdfFile.getPageSize(page);
+                float scaleX = scaledSize.getWidth() / originalSize.getWidth();
+                float scaleY = scaledSize.getHeight() / originalSize.getHeight();
+                for (int i = 0; i < rectPagePool.size(); i++) {
+                    RectF rect = rectPagePool.get(i);
+                    rect.left *= scaleX;
+                    rect.top *= scaleY;
+                    rect.right *= scaleX;
+                    rect.bottom *= scaleY;
+                }
+                
                 if (rectCount >= 0 && rectPagePool.size() > rectCount) {
                     rectPagePool.subList(rectCount, rectPagePool.size()).clear();
                 }

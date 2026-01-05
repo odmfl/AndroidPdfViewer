@@ -70,6 +70,10 @@ The search implementation consists of three layers:
 - [x] Highlights update on zoom/scroll
 - [x] Highlight positioning with page coordinates
 - [x] Highlight rendering on PDocSelection overlay
+- [x] Support for all FitPolicy modes (WIDTH, HEIGHT, BOTH)
+- [x] Correct coordinate transformation with zoom
+- [x] Highlights work with horizontal/vertical scrolling
+- [x] Highlights work with page spacing and auto-spacing
 
 #### Navigation
 - [x] Navigate to next result
@@ -254,6 +258,73 @@ pdfView.fromAsset("sample.pdf")
     .load();
 ```
 
+### FitPolicy and Zoom Support
+
+Search highlighting works correctly with all FitPolicy modes and zoom levels:
+
+#### FitPolicy Modes
+```java
+// FitPolicy.WIDTH - Fit page to view width
+pdfView.fromAsset("document.pdf")
+    .pageFitPolicy(FitPolicy.WIDTH)
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Highlights positioned correctly for WIDTH mode
+    })
+    .load();
+
+// FitPolicy.HEIGHT - Fit page to view height
+pdfView.fromAsset("document.pdf")
+    .pageFitPolicy(FitPolicy.HEIGHT)
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Highlights positioned correctly for HEIGHT mode
+    })
+    .load();
+
+// FitPolicy.BOTH - Fit page to both width and height
+pdfView.fromAsset("document.pdf")
+    .pageFitPolicy(FitPolicy.BOTH)
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Highlights positioned correctly for BOTH mode
+    })
+    .load();
+```
+
+#### Zoom Behavior
+```java
+// Search with dynamic zoom
+pdfView.fromAsset("document.pdf")
+    .pageFitPolicy(FitPolicy.BOTH)
+    .load();
+
+pdfView.search("keyword");
+
+// Highlights automatically update when zooming
+pdfView.zoomWithAnimation(2.0f);  // Zoom in - highlights adjust
+pdfView.resetZoomWithAnimation(); // Reset zoom - highlights adjust
+```
+
+#### Complex Layout Configurations
+```java
+// All layout options work with search highlighting
+pdfView.fromAsset("document.pdf")
+    .pageFitPolicy(FitPolicy.BOTH)      // Fit to both dimensions
+    .swipeHorizontal(true)               // Horizontal scrolling
+    .pageSnap(true)                      // Snap to pages
+    .autoSpacing(true)                   // Auto spacing between pages
+    .pageFling(true)                     // Fling animation
+    .spacing(10)                         // 10dp spacing between pages
+    .onSearchMatch((page, totalMatched, word) -> {
+        // Highlights work with all settings
+    })
+    .load();
+```
+
+#### Coordinate Transformation
+The library handles coordinate transformation automatically:
+- Native PDF coordinates → Scaled page coordinates → View coordinates
+- Accounts for FitPolicy scaling, zoom level, page offsets, and spacing
+- See [COORDINATE_TRANSFORMATION.md](COORDINATE_TRANSFORMATION.md) for details
+
 ## Known Limitations
 
 1. **Low-level API rectangles**: The `TextSearch.getBoundingRects()` method has a TODO for full implementation. However, this doesn't affect the PDFView integration which handles rectangles properly through `getRectForRecordItem()`.
@@ -277,6 +348,7 @@ Potential improvements that could be added:
 ## Documentation
 
 - **API Reference**: See [API.md](API.md) for complete API documentation
+- **Coordinate Transformation**: See [COORDINATE_TRANSFORMATION.md](COORDINATE_TRANSFORMATION.md) for coordinate system details
 - **Build Instructions**: See [BUILDING.md](BUILDING.md) for building the project
 - **Main README**: See [README.md](README.md) for quick start guide
 - **Implementation History**: See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for previous implementation work
